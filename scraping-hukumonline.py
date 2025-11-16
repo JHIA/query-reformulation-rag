@@ -3,8 +3,9 @@ import os
 import time
 from bs4 import BeautifulSoup
 import re
+from config import API_FIRECRAWL
 
-API_KEY = os.getenv("FIRECRAWL_API_KEY", "fc-64ba4495945740eeb2a648e81c05b6c5")
+API_KEY = os.getenv("FIRECRAWL_API_KEY", API_FIRECRAWL)
 fc = Firecrawl(api_key=API_KEY)
 
 def extract_article_links(list_url):
