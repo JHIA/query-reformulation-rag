@@ -127,7 +127,7 @@ def extract_article_content(html):
     # Fallback 2: Ambil semua teks
     return soup.get_text(separator="\n", strip=True)
 
-def scrape_full_article(article):
+def scrape_full_article(article, theme):
     """Scrape full article with all metadata"""
     url = article["link"]
     print("Scraping article:", url)
@@ -154,42 +154,124 @@ def scrape_full_article(article):
             publish_date = meta.get("published_at") or meta.get("publishedTime")
     
     return {
+        "theme": theme,
         "title": article["title"],
         "link": url,
         "publish_date": publish_date,
         "content": content_clean
     }
 
-def scrape_pages(start_page=1, end_page=2):
-    """Scrape multiple pages of articles"""
-    all_results = []
+def scrape_theme(theme_url, theme_name, start_page=1, end_page=1):
+    """Scrape articles from a specific theme"""
+    print(f"\n{'='*60}")
+    print(f"Starting scraping for theme: {theme_name}")
+    print(f"Pages: {start_page} to {end_page}")
+    print(f"{'='*60}\n")
+    
+    theme_results = []
     
     for page in range(start_page, end_page + 1):
         if page == 1:
-            list_url = "https://www.hukumonline.com/klinik/perdata/"
+            list_url = theme_url
         else:
-            list_url = f"https://www.hukumonline.com/klinik/perdata/page/{page}/"
+            # Tambahkan /page/X/ di akhir URL
+            list_url = theme_url.rstrip('/') + f"/page/{page}/"
         
         article_links = extract_article_links(list_url)
         
         for art in article_links:
             try:
-                data = scrape_full_article(art)
-                all_results.append(data)
+                data = scrape_full_article(art, theme_name)
+                theme_results.append(data)
                 print(f"✓ Scraped: {data['title']}")
                 print(f"  Date: {data['publish_date']}")
                 time.sleep(2)
             except Exception as ex:
                 print(f"✗ Error scraping {art['link']}: {ex}")
     
+    print(f"\n✓ Theme '{theme_name}' completed! Total articles: {len(theme_results)}\n")
+    return theme_results
+
+def scrape_multiple_themes(themes_config):
+    """
+    Scrape multiple themes
+    
+    Args:
+        themes_config: List of dictionaries containing theme information
+                      Format: [
+                          {
+                              "name": "perdata",
+                              "url": "https://www.hukumonline.com/klinik/perdata/",
+                              "start_page": 1,
+                              "end_page": 2
+                          },
+                          ...
+                      ]
+    """
+    all_results = []
+    
+    for theme in themes_config:
+        theme_name = theme.get("name", "unknown")
+        theme_url = theme.get("url")
+        start_page = theme.get("start_page", 1)
+        end_page = theme.get("end_page", 1)
+        
+        if not theme_url:
+            print(f"⚠ Skipping theme '{theme_name}': No URL provided")
+            continue
+        
+        try:
+            results = scrape_theme(theme_url, theme_name, start_page, end_page)
+            all_results.extend(results)
+        except Exception as ex:
+            print(f"✗ Error scraping theme '{theme_name}': {ex}")
+    
     return all_results
 
 if __name__ == "__main__":
-    results = scrape_pages(start_page=1, end_page=1)
+    # Konfigurasi tema yang ingin di-scrape
+    themes = [
+        {
+            "name": "perdata",
+            "url": "https://www.hukumonline.com/klinik/perdata/",
+            "start_page": 1,
+            "end_page": 1
+        },
+        {
+            "name": "pidana",
+            "url": "https://www.hukumonline.com/klinik/pidana/",
+            "start_page": 1,
+            "end_page": 1
+        },
+        {
+            "name": "keluarga",
+            "url": "https://www.hukumonline.com/klinik/keluarga/",
+            "start_page": 1,
+            "end_page": 1
+        }
+        # Tambahkan tema lain sesuai kebutuhan
+    ]
     
+    # Jalankan scraping
+    results = scrape_multiple_themes(themes)
+    
+    # Simpan hasil
     import json
-    with open("result/hukumonline_perdata_articles.json", "w", encoding="utf-8") as f:
+    output_file = "result/hukumonline_multi_theme_articles.json"
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     
-    print(f"\n✓ Done! Total articles scraped: {len(results)}")
-    print(f"  Saved to: hukumonline_perdata_articles.json")
+    # Summary
+    print(f"\n{'='*60}")
+    print("SCRAPING COMPLETED!")
+    print(f"{'='*60}")
+    print(f"Total articles scraped: {len(results)}")
+    
+    # Summary per tema
+    from collections import Counter
+    theme_counts = Counter(r['theme'] for r in results)
+    for theme, count in theme_counts.items():
+        print(f"  - {theme}: {count} articles")
+    
+    print(f"\nSaved to: {output_file}")
+    print(f"{'='*60}\n")

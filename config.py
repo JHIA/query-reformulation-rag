@@ -1,2 +1,2 @@
 
-API_FIRECRAWL = "your api key"
+API_FIRECRAWL = "fc-64ba4495945740eeb2a648e81c05b6c5"
