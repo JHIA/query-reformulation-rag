@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 from config import API_FIRECRAWL
 
+
 API_KEY = os.getenv("FIRECRAWL_API_KEY", API_FIRECRAWL)
 fc = Firecrawl(api_key=API_KEY)
 
@@ -98,16 +99,16 @@ def extract_article_content(html):
         content_div = main_wrapper.select_one("div.css-15rxf41.e1vjmfpm0")
         
         if content_div:
-            # Ambil semua teks dari content_div
-            text = content_div.get_text(separator="\n", strip=True)
+            # Ambil semua teks dari content_div dengan separator spasi
+            text = content_div.get_text(separator=" ", strip=True)
             
             # Bersihkan teks yang tidak diinginkan
-            text = re.sub(r'KLINIK TERKAIT.*?(?=\n[A-Z]|\n\n|$)', '', text, flags=re.DOTALL)
+            text = re.sub(r'KLINIK TERKAIT.*?(?=\s[A-Z]|\s\s|$)', '', text, flags=re.DOTALL)
             text = re.sub(r'Belajar Hukum Secara Online.*?Lihat Semua Kelas\s*', '', text, flags=re.DOTALL)
             text = re.sub(r'Navigate (left|right)\s*', '', text, flags=re.IGNORECASE)
             
-            # Bersihkan whitespace berlebih
-            text = re.sub(r'\n{3,}', '\n\n', text)
+            # Bersihkan whitespace berlebih (multiple spaces menjadi 1 space)
+            text = re.sub(r'\s+', ' ', text)
             
             return text.strip()
     
@@ -119,13 +120,18 @@ def extract_article_content(html):
             for elem in wrapper.select(selector):
                 elem.decompose()
         
-        text = wrapper.get_text(separator="\n", strip=True)
-        text = re.sub(r'KLINIK TERKAIT.*?(?=\n[A-Z]|\n\n|$)', '', text, flags=re.DOTALL)
+        text = wrapper.get_text(separator=" ", strip=True)
+        text = re.sub(r'KLINIK TERKAIT.*?(?=\s[A-Z]|\s\s|$)', '', text, flags=re.DOTALL)
         text = re.sub(r'Belajar Hukum Secara Online.*?Lihat Semua Kelas\s*', '', text, flags=re.DOTALL)
+        text = re.sub(r'\s+', ' ', text)
+        
         return text.strip()
     
     # Fallback 2: Ambil semua teks
-    return soup.get_text(separator="\n", strip=True)
+    text = soup.get_text(separator=" ", strip=True)
+    text = re.sub(r'\s+', ' ', text)
+    
+    return text.strip()
 
 def scrape_full_article(article, theme):
     """Scrape full article with all metadata"""
@@ -232,46 +238,56 @@ if __name__ == "__main__":
     # Konfigurasi tema yang ingin di-scrape
     themes = [
         {
-            "name": "perdata",
-            "url": "https://www.hukumonline.com/klinik/perdata/",
-            "start_page": 1,
-            "end_page": 1
-        },
-        {
-            "name": "pidana",
-            "url": "https://www.hukumonline.com/klinik/pidana/",
-            "start_page": 1,
-            "end_page": 1
-        },
-        {
-            "name": "keluarga",
-            "url": "https://www.hukumonline.com/klinik/keluarga/",
+            "name": "kenegaraan",
+            "url": "https://www.hukumonline.com/klinik/kenegaraan/",
             "start_page": 1,
             "end_page": 1
         }
         # Tambahkan tema lain sesuai kebutuhan
     ]
     
-    # Jalankan scraping
-    results = scrape_multiple_themes(themes)
-    
-    # Simpan hasil
+    # Jalankan scraping dan simpan per tema
     import json
-    output_file = "result/hukumonline_multi_theme_articles.json"
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+    all_results = []
+    saved_files = []
+    
+    for theme in themes:
+        theme_name = theme.get("name", "unknown")
+        theme_url = theme.get("url")
+        start_page = theme.get("start_page", 1)
+        end_page = theme.get("end_page", 1)
+        
+        if not theme_url:
+            print(f"⚠ Skipping theme '{theme_name}': No URL provided")
+            continue
+        
+        try:
+            # Scrape tema
+            results = scrape_theme(theme_url, theme_name, start_page, end_page)
+            all_results.extend(results)
+            
+            # Simpan hasil per tema
+            output_file = f"../result/hukumonline_{theme_name}_articles.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(results, f, ensure_ascii=False, indent=2)
+            
+            saved_files.append({
+                "theme": theme_name,
+                "file": output_file,
+                "count": len(results)
+            })
+            
+            print(f"✓ Saved {theme_name} to: {output_file}")
+            
+        except Exception as ex:
+            print(f"✗ Error scraping theme '{theme_name}': {ex}")
     
     # Summary
     print(f"\n{'='*60}")
     print("SCRAPING COMPLETED!")
     print(f"{'='*60}")
-    print(f"Total articles scraped: {len(results)}")
-    
-    # Summary per tema
-    from collections import Counter
-    theme_counts = Counter(r['theme'] for r in results)
-    for theme, count in theme_counts.items():
-        print(f"  - {theme}: {count} articles")
-    
-    print(f"\nSaved to: {output_file}")
+    print(f"Total articles scraped: {len(all_results)}")
+    print(f"\nFiles saved:")
+    for file_info in saved_files:
+        print(f"  - {file_info['theme']}: {file_info['count']} articles → {file_info['file']}")
     print(f"{'='*60}\n")

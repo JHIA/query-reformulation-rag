@@ -188,7 +188,7 @@ if __name__ == "__main__":
     results = scrape_pages(start_page=1, end_page=1)
     
     import json
-    with open("result/hukumonline_perdata_articles.json", "w", encoding="utf-8") as f:
+    with open("../result/hukumonline_perdata_articles.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     
     print(f"\n✓ Done! Total articles scraped: {len(results)}")
