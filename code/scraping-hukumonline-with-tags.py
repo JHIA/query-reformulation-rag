@@ -1,8 +1,8 @@
 from firecrawl import Firecrawl
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
-from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
 from bs4 import BeautifulSoup
@@ -144,7 +144,7 @@ def scrape_tags_with_selenium(url):
         # Uncomment line dibawah jika ingin headless mode
         # options.add_argument('--headless')
         
-        driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.get(url)
         
         # Tunggu halaman sepenuhnya termuat
@@ -278,10 +278,10 @@ if __name__ == "__main__":
     # Konfigurasi tema yang ingin di-scrape
     themes = [
         {
-            "name": "keluarga",
-            "url": "https://www.hukumonline.com/klinik/keluarga/",
+            "name": "hak asasi manusia",
+            "url": "https://www.hukumonline.com/klinik/hak-asasi-manusia/",
             "start_page": 1,
-            "end_page": 1
+            "end_page": 5
         }
         # Tambahkan tema lain sesuai kebutuhan
     ]
