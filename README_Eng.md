@@ -101,8 +101,7 @@ modal deploy modal_app.py
 
 ## 📊 Full Evaluation Report
 
-**Date:** December 23, 2024
-**Version:** 2.0 (Non-Technical)
+**Date:** December 24, 2025
 
 ### 1. Summary
 The goal of this test was to answer: **"If a user asks using layman/casual language (curhat), can the system find the correct legal rule?"**

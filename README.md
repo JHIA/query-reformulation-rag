@@ -99,9 +99,9 @@ modal volume put -f rag-storage faiss_index data/faiss_index
 modal deploy modal_app.py
 ```
 
-## 📊 Laporan Evaluasi Lengkap (Evaluation Report)
+## 📊 Laporan Evaluasi Lengkap
 
-**Tanggal:** 23 Desember 2024
+**Tanggal:** 24 Desember 2025
 
 ### 1. Ringkasan
 Tujuan pengujian ini adalah menjawab pertanyaan: **"Jika ada orang bertanya pakai bahasa sehari-hari (curhat), apakah sistem bisa menemukan pasal atau aturan hukum yang benar?"**
