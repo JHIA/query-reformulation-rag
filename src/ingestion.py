@@ -8,16 +8,25 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from . import config
 
 def load_data():
-    """Loads data from JSON file and converts to Documents."""
     if not os.path.exists(config.DATA_PATH):
-        raise FileNotFoundError(f"Data file not found at {config.DATA_PATH}")
-        
-    with open(config.DATA_PATH, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        
+        raise FileNotFoundError(f"Data directory not found at {config.DATA_PATH}")
+    all_data = []
+    for filename in os.listdir(config.DATA_PATH):
+        if filename.endswith(".json"):
+            file_path = os.path.join(config.DATA_PATH, filename)
+            print(f"Loading data from {filename}...")
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        all_data.extend(data)
+                    else:
+                        print(f"Warning: {filename} does not contain a list of objects. Skipping.")
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+
     docs = []
-    for entry in data:
-        # Extract metadata
+    for entry in all_data:
         metadata = {
             "title": entry.get("title", ""),
             "link": entry.get("link", ""),
@@ -31,7 +40,6 @@ def load_data():
     return docs
 
 def build_index():
-    """Loads data, splits it, and builds a FAISS index."""
     print("Loading data...")
     raw_docs = load_data()
     
@@ -45,7 +53,7 @@ def build_index():
     print("Initializing Embeddings...")
     if not config.GOOGLE_API_KEY:
         raise ValueError("GOOGLE_API_KEY not found in environment variables.")
-        
+
     embeddings = GoogleGenerativeAIEmbeddings(
         model=config.EMBEDDING_MODEL,
         google_api_key=config.GOOGLE_API_KEY
