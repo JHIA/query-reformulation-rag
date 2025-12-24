@@ -1,0 +1,92 @@
+[
+  {
+    "question": "Gimana sih caranya ngurus izin kalau mau buka usaha jual beli BBM? Ribet nggak ya?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Izin Usaha untuk Kegiatan Jual Beli BBM",
+    "category": "bisnis"
+  },
+  {
+    "question": "Kalau ada napi yang dibully sama temen selnya di penjara, ada hukum yang ngelindungin mereka nggak sih?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Perlindungan Terhadap Napi KorbanBullyingdi Lapas",
+    "category": "hak_asasi_manusia"
+  },
+  {
+    "question": "Sebenernya apa sih bedanya perlindungan hukum sama penegakan hukum? Kok kayaknya sama aja?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Pengertian Perlindungan Hukum dan Penegakan Hukum",
+    "category": "ilmu_hukum"
+  },
+  {
+    "question": "Misal aku punya hak tunggal buat jual produk tertentu, terus ada orang lain yang ikut jualan tanpa izin, bisa dilaporin pakai hukum apa?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Penegakan Hukum atas Pelanggaran Hak Distribusi Eksklusif",
+    "category": "kekayaan_intelektual"
+  },
+  {
+    "question": "Suami sering banget bilang talak pas lagi marah tapi cuma lisan doang, itu status nikahnya jadi cerai beneran atau nggak?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Status Perkawinan Jika Sering Ditalak secara Lisan",
+    "category": "keluarga"
+  },
+  {
+    "question": "Sebagai warga negara, hak-hak kita di mata hukum itu apa aja sih? Katanya ada 11 ya?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "11 Hak Warga Negara dalam Bidang Hukum",
+    "category": "kenegaraan"
+  },
+  {
+    "question": "Anak kecil di bawah umur itu sebenernya boleh kerja nggak sih? Terus hukum ngelindungin mereka gimana?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Perlindungan Hukum untuk Pekerja Anak",
+    "category": "ketenagakerjaan"
+  },
+  {
+    "question": "Pemain bola asing yang main di liga Indonesia itu aturannya gimana? Apa ada syarat khusus biar bisa main di sini?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Aturan tentang Pemain Sepak Bola Asing di Indonesia",
+    "category": "olahraga"
+  },
+  {
+    "question": "Maksudnya 'Renvoi' dalam putusan Mahkamah Agung itu apa sih? Terus tata caranya gimana?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Dasar Hukum dan Tata Cara Renvoi Putusan MA",
+    "category": "perdata"
+  },
+  {
+    "question": "Kalau baju ilang pas lagi di-laundry, pemilik laundry wajib ganti rugi nggak? Ada aturannya nggak sih?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Ganti Rugi Laundry Jika Baju Cucian Hilang",
+    "category": "perlindungan_konsumen"
+  },
+  {
+    "question": "Tanah yang udah diwakafin itu boleh dijual lagi nggak sih sama pengurusnya? Hukumnya ngebolehin apa nggak?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Hukum Menjual Tanah Wakaf",
+    "category": "pertanahan_dan_properti"
+  },
+  {
+    "question": "Kalau tersangka narkoba mau minta rehabilitasi, syarat sama prosedurnya gimana ya?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Syarat dan Prosedur Rehabilitasi bagi Tersangka dan Terdakwa",
+    "category": "pidana"
+  },
+  {
+    "question": "Pengacara atau notaris itu kebal hukum nggak sih? Atau mereka tetep bisa dituntut pidana kalau salah?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Apakah Advokat dan Notaris Dapat Dituntut Pidana?",
+    "category": "profesi_hukum"
+  },
+  {
+    "question": "Bisa nggak sih perusahaan startup gitu ngelola pasar tradisional? Aturannya ngebolehin nggak?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Pengelolaan Pasar Tradisional oleh PerusahaanStartup",
+    "category": "start_up_umkm"
+  },
+  {
+    "question": "Kalau iseng nyebarin lagu parodi yang isinya ngehina orang, itu bisa kena pasal hukum nggak ya?",
+    "ideal_answer": "Refer to document content.",
+    "expected_document_title": "Hukum Menyebarkan Lagu yang Bermuatan Penghinaan",
+    "category": "teknologi"
+  }
+]
