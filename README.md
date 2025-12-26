@@ -101,19 +101,27 @@ modal deploy modal_app.py
 
 ## 📊 Laporan Evaluasi Lengkap
 
-**Tanggal:** 24 Desember 2025
+**Tanggal:** 26 Desember 2025
 
 ### 1. Ringkasan
-Tujuan pengujian ini adalah menjawab pertanyaan: **"Jika ada orang bertanya pakai bahasa sehari-hari (curhat), apakah sistem bisa menemukan pasal atau aturan hukum yang benar?"**
-
-Hasilnya sangat memuaskan. Dari 15 percobaan dengan topik berbeda-beda, sistem berhasil menemukan aturan yang tepat **100%** (tidak pernah salah sasaran).
+Tujuan pengujian ini adalah menjawab pertanyaan: **"Jika ada orang bertanya pakai bahasa sehari-hari (curhat), apakah sistem bisa menemukan pasal atau aturan hukum yang benar?"**.
 
 ### 2. Metodologi
-Kami membuat ujian yang sulit untuk menghindari bias:
-1.  **Pembuatan Soal (Dataset)**: Menggunakan AI (Gemini) yang dipersona sebagai **"Orang Awam"** untuk membuat pertanyaan curhat informal dari 15 kategori hukum berbeda.
-2.  **Sistem Penilaian**: Kami menilai apakah dokumen hukum yang muncul di urutan paling atas adalah dokumen yang benar (Hit Rate).
+Kami merancang skenario pengujian yang ketat untuk menghindari bias evaluasi:
+1. Pembuatan Soal (Dataset Generation):
+Menggunakan AI yang dipersona sebagai "Orang Awam" untuk men-generate pertanyaan natural (natural language queries) dengan gaya bahasa sehari-hari dari 15 kategori hukum berbeda.
 
-### 3. Skenario / Studi Kasus & Analisis Dampak
+2. Penilaian Ketepatan Retrieval (Hit Rate & MRR):
+Kami menilai performa pencarian dokumen menggunakan dua metrik utama:
+- Hit Rate (Recall@K): Apakah dokumen hukum yang relevan berhasil ditemukan di dalam daftar hasil pencarian teratas (Top-K).
+- MRR (Mean Reciprocal Rank): Seberapa tinggi peringkat (ranking) dokumen relevan pertama yang muncul, untuk mengukur efisiensi pengguna dalam menemukan jawaban tanpa scrolling jauh.
+
+3. Penilaian Kualitas Generasi (LLM-as-a-Judge):
+Kami menggunakan skenario LLM-as-a-Judge untuk mengevaluasi dua aspek kualitas jawaban:
+- Faithfulness: Mengukur apakah jawaban sistem murni bersumber dari dokumen konteks yang ditemukan (untuk mendeteksi halusinasi).
+- Answer Relevancy: Mengukur apakah jawaban tersebut relevan dan menjawab inti pertanyaan pengguna.
+
+### 3.1  Penilaian Ketepatan Retrieval (Hit Rate & MRR)
 Berikut adalah 15 pertanyaan "bahasa awam" yang diujikan, lengkap dengan transformasi Query dan perbandingan performa (AI vs Tanpa AI):
 
 | Topik | Curhatan User (Input) | Query Reformulasi (AI) | Dokumen Target (Jawaban) | Rank (AI) | Perubahan (vs Raw) |
@@ -134,17 +142,156 @@ Berikut adalah 15 pertanyaan "bahasa awam" yang diujikan, lengkap dengan transfo
 | **UMKM** | *"Startup boleh kelola pasar tradisional?"* | *"Legalitas perusahaan startup mengelola pasar tradisional (Perpres 112/2007)"* | Pengelolaan Pasar Tradisional oleh Startup | **#1** | ➖ Stabil |
 | **ITE** | *"Sebarin lagu parodi ngehina orang kena pasal?"* | *"Tindakan hukum menyebarkan lagu parodi bermuatan penghinaan (UU ITE & KUHP)"* | Hukum Menyebarkan Lagu Bermuatan Penghinaan | **#1** | 🔼 **NAIK (2 -> 1)** |
 
-### 4. Hasil & Kesimpulan Analisis Dampak/A/B Testing
+### 3.2 Penilaian Kualitas Generasi (LLM-as-a-Judge)
+Selain evaluasi sistem otomatis, kami melakukan **LLM as a Judge Simulation** terhadap 15 sampel dengan kriteria penilaian **Faithfulness** dan **Answer Relevancy**.
 
-Untuk membuktikan efektivitas fitur Reformulasi, kami membandingkan pelacakan (tracking) kinerja sistem dengan dan tanpa fitur tersebut:
+## 📊 Detail Evaluasi Per Sampel
 
-| Metode | Hit Rate (Akurasi) | MRR (Ketepatan Ranking) | Catatan |
-| :--- | :--- | :--- | :--- |
-| **Tanpa Reformulasi** (Raw Query) | 100% | 0.900 | Dokumen sering muncul di Rank 2 atau 3. |
-| **Dengan Reformulasi** (Double-Hop) | **100%** | **0.933** | Dokumen lebih konsisten naik ke **Rank 1**. |
+### 1. Izin Usaha Jual Beli BBM
+> **Pertanyaan:** "Gimana sih caranya ngurus izin kalau mau buka usaha jual beli BBM? Ribet nggak ya?"
 
-**Kesimpulan:**
-Fitur **Reformulasi Kueri** terbukti mampu meningkatkan presisi ranking (**+0.033 MRR**). Ini berarti pengguna lebih cepat menemukan jawaban di urutan teratas tanpa perlu scrolling. Sistem sukses menjembatani istilah awam menjadi istilah hukum yang akurat.
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban mengutip PP No. 28/2025 dan PP No. 36/2004 secara akurat dari context. Tidak ada info tambahan yang mengada-ada.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban langsung merespons keluhan "ribet nggak" dengan penjelasan tentang OSS dan klasifikasi risiko. Sangat solutif.
+- **Retrieval Quality:** ✅ Dokumen yang ditarik (tentang OSS, KBLI 46610) sangat relevan.
+
+### 2. Perlindungan Napi Korban Bullying
+> **Pertanyaan:** "Kalau ada napi yang dibully... ada hukum yang ngelindungin mereka nggak sih?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban secara presisi mengutip UU No. 22 Tahun 2022 Pasal 3 huruf b dan c dari context yang tersedia.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Langsung menjawab "Ya, ada hak perlindungan", sesuai intent user yang mencari kepastian.
+
+### 3. Perlindungan Hukum vs Penegakan Hukum
+> **Pertanyaan:** "Sebenernya apa sih bedanya perlindungan hukum sama penegakan hukum?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Definisi diambil tepat dari pendapat ahli (Philipus M. Hadjon, Jimly Asshiddiqie) yang ada di dokumen. Perbedaan preventif/represif dijelaskan dengan baik.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Struktur jawaban menggunakan tabel perbandingan sangat membantu menjawab kebingungan user.
+
+### 4. Pelanggaran Hak Distribusi Eksklusif
+> **Pertanyaan:** "Misal aku punya hak tunggal... ada orang lain ikut jualan tanpa izin, bisa dilaporin pakai hukum apa?"
+
+- **Faithfulness:** ⭐⭐⭐⭐ (4/5)
+  - *Analisis:* Jawaban menyebutkan sanksi pidana Pasal 100 UU Merek. Meskipun ada dasar hukumnya di satu dokumen, dokumen lain dalam context secara eksplisit menyebutkan *"tidak mengatur sanksi terhadap pihak tidak resmi"* (untuk kasus reseller barang asli). Jawaban AI kurang menangkap nuansa pengecualian ini, sehingga skor dikurangi sedikit karena generalisasi.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban komprehensif mencakup opsi pidana dan perdata sesuai keinginan user untuk "melapor".
+
+### 5. Status Talak Lisan
+> **Pertanyaan:** "Suami sering banget bilang talak... cuma lisan doang, status nikahnya cerai beneran atau nggak?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban tegas mengutip Pasal 39 UU Perkawinan dan KHI bahwa perceraian hanya sah di depan pengadilan. Sangat setia pada dokumen.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Langsung menenangkan kegelisahan user dengan jawaban "Status Perkawinan Tetap Sah".
+
+### 6. 11 Hak Warga Negara
+> **Pertanyaan:** "Hak-hak kita di mata hukum itu apa aja sih? Katanya ada 11 ya?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban merinci poin 1-11 dengan sangat rapi sesuai context dokumen yang memang membahas 11 hak tersebut. Akurasi 100%.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Format listicle (poin-poin) sangat cocok untuk pertanyaan jenis ini.
+
+### 7. Pekerja Anak
+> **Pertanyaan:** "Anak kecil di bawah umur itu sebenernya boleh kerja nggak sih?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban menjelaskan nuansa hukum dengan tepat: *"Dilarang, TAPI ada pengecualian (usia 13-15 untuk pekerjaan ringan)"*. Ini diambil akurat dari UU Ketenagakerjaan di context.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menjawab keraguan "boleh nggak sih" dengan penjelasan bersyarat yang mudah dipahami.
+
+### 8. Pemain Bola Asing
+> **Pertanyaan:** "Pemain bola asing... aturannya gimana?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menggabungkan info dari UU Keolahragaan, UU Ketenagakerjaan, dan Peraturan PSSI yang tersebar di chunks berbeda menjadi satu jawaban utuh. Synthesis skill yang baik.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Relevan, mencakup izin kerja (IMTA) dan regulasi olahraga.
+
+### 9. Renvoi Putusan MA
+> **Pertanyaan:** "Maksudnya 'Renvoi' dalam putusan MA itu apa sih?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Definisi Renvoi sebagai perbaikan kesalahan tulis (clerical error) diambil tepat dari Perma No. 6 Tahun 2022 di context.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menjelaskan istilah teknis hukum dengan bahasa yang tidak terlalu kaku.
+
+### 10. Ganti Rugi Laundry
+> **Pertanyaan:** "Kalau baju ilang pas lagi di-laundry, pemilik wajib ganti rugi nggak?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Mengutip Pasal 19 UU Perlindungan Konsumen tentang kewajiban ganti rugi dalam 7 hari. Sangat akurat sesuai dokumen.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Sangat memihak konsumen sesuai pertanyaan user, memberikan langkah konkret (klaim BPSK).
+
+### 11. Jual Tanah Wakaf
+> **Pertanyaan:** "Tanah yang udah diwakafin itu boleh dijual lagi nggak sih?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban tegas **"DILARANG"** berdasarkan Pasal 40 UU Wakaf. Menyebutkan sanksi pidana 5 tahun (Pasal 67) yang ada di context.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban langsung to the point tanpa berbelit-belit.
+
+### 12. Rehabilitasi Tersangka Narkoba
+> **Pertanyaan:** "Kalau tersangka narkoba mau minta rehabilitasi, syarat sama prosedurnya gimana?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menjelaskan prosedur Praperadilan (Pasal 77 KUHAP) dan syarat khusus (asesmen) yang ada di dokumen.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Alur prosedur dijelaskan step-by-step (Pengajuan -> Pemeriksaan -> Putusan 7 hari).
+
+### 13. Imunitas Advokat & Notaris
+> **Pertanyaan:** "Pengacara atau notaris itu kebal hukum nggak sih?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Membedakan dengan jelas: Advokat punya imunitas terbatas (Pasal 16 UU Advokat), Notaris **TIDAK** punya (UU Jabatan Notaris). Pembedaan ini diambil tepat dari context.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menjawab mitos "kebal hukum" dengan fakta hukum yang berimbang.
+
+### 14. Startup Kelola Pasar Tradisional
+> **Pertanyaan:** "Bisa nggak sih perusahaan startup gitu ngelola pasar tradisional?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Mengutip Perpres 112/2007 Pasal 4 yang membolehkan swasta mengelola pasar. Syarat kemitraan UMKM juga disertakan sesuai dokumen.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Jawaban "Bisa, dengan syarat..." sangat pas menjawab keraguan user.
+
+### 15. Lagu Parodi Penghinaan
+> **Pertanyaan:** "Kalau iseng nyebarin lagu parodi yang isinya ngehina orang, itu bisa kena pasal hukum nggak ya?"
+
+- **Faithfulness:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Mengutip Pasal 27A UU ITE (terbaru 2024) tentang menyerang kehormatan. Menjelaskan unsur "sengaja" dan sanksi 2 tahun penjara sesuai context.
+- **Relevancy:** ⭐⭐⭐⭐⭐ (5/5)
+  - *Analisis:* Menjawab kekhawatiran "iseng" dengan penjelasan unsur "niat" (mens rea) dalam hukum pidana.
+
+### 4. Hasil & Kesimpulan
+
+Pengujian pada langkah 3.1 dan 3.2 melibatkan 4 metrik yaitu
+
+1. Faithfulness: Mengukur konsistensi faktual jawaban yang dihasilkan sistem terhadap konteks dokumen yang diberikan (untuk mendeteksi halusinasi).
+2. Answer Relevancy: Mengukur tingkat relevansi jawaban sistem terhadap pertanyaan pengguna (user query).
+3. Hit Rate (Recall@K): Mengukur peluang sistem menemukan setidaknya satu dokumen yang relevan dalam daftar top-k hasil pencarian.
+4. MRR (Mean Reciprocal Rank): Mengukur akurasi peringkat sistem dengan memberikan bobot lebih tinggi jika dokumen relevan muncul di urutan teratas
+
+Hasil pengujian adalah sebagai berikut:
+
+| Metrik | Skor | Predikat |
+| :--- | :--- | :--- |
+| **Faithfulness** | **98.6%** | Sangat Andal |
+| **Relevancy** | **100%** | Sangat Relevan |
+| **Hit Rate** | **100%** | Sangat Efektif |
+| **MRR (tanpa query reformulation)** | **90%** | Presisi Tinggi |
+| **MRR (dengan query reformulation)** | **93%** | Presisi Tinggi |
+
+Sistem ini menunjukkan kematangan yang luar biasa dalam 3 aspek utama:
+
+1.  **Context Understanding:** Sistem mampu memilah informasi yang relevan dari chunks dokumen yang panjang dan kompleks.
+2.  **Regulatory Compliance:** Sistem sangat patuh pada aturan hukum terbaru (contoh: mengutip UU ITE 2024 dengan benar).
+3.  **User Intent Alignment:** Kemampuan reformulasi query terbukti **sukses**. Jawaban yang dihasilkan benar-benar "nyambung" dengan pertanyaan bahasa sehari-hari dengan meningkatkan akurasi dan ketepatan ranking, bridging the gap between layman language and legal terminology.
 
 ---
 
@@ -159,3 +306,5 @@ Sebagai bentuk transparansi akademik, kami mencatat keterbatasan berikut:
 
 3.  **Ketergantungan Infrastruktur**:
     *   Bergantung penuh pada uptime API Cloud. Jika API down, sistem tidak memiliki fallback lokal.
+
+---
