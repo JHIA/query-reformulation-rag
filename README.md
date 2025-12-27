@@ -29,7 +29,7 @@ Saat ini didukung oleh **Qwen 3 32B (via Groq)** untuk kecepatan dan kecerdasan 
 ## 🛠️ Teknologi yang Digunakan
 
 *   **Language**: Python 3.10+
-*   **LLM Utama**: **Qwen 3 32B** (via Groq API) - *Fast & Smart*
+*   **LLM Utama**: **Qwen 3 32B** (via Groq API)
 *   **LLM Alternatif**: **Gemini 2.5 Flash** (Google)
 *   **Embedding**: Google Text-Embedding-004
 *   **Vector Database**: FAISS (CPU)
@@ -41,9 +41,10 @@ Saat ini didukung oleh **Qwen 3 32B (via Groq)** untuk kecepatan dan kecerdasan 
 ```text
 legal-rag-system/
 ├── data/
-│   ├── hukumonline_sample.json      # Dataset artikel hukum
-│   └── eval_datasets/               # Dataset evaluasi (generated)
+│   ├── kategori_hukumonline_sample.json      # Dataset artikel hukum
+│   └── eval_datasets/               # Dataset evaluasi 
 ├── src/
+│   ├── evaluation/                  # Script evaluasi
 │   ├── config.py                    # Konfigurasi API
 │   ├── ingestion.py                 # Indexing & Metadata
 │   ├── rag_engine.py                # Core Logic (Reformulation + Rerank)

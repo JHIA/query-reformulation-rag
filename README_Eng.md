@@ -42,8 +42,9 @@ Currently powered by **Qwen 3 32B (via Groq)** for high-speed intelligent reason
 legal-rag-system/
 ├── data/
 │   ├── hukumonline_sample.json      # Legal dataset
-│   └── eval_datasets/               # Evaluation datasets (generated)
+│   └── eval_datasets/               # Evaluation datasets
 ├── src/
+│   ├── evaluation/                  # Evaluation scripts
 │   ├── config.py                    # API Configuration
 │   ├── ingestion.py                 # Indexing & Metadata Extraction
 │   ├── rag_engine.py                # Core Logic (Reformulation + Rerank)
