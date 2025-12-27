@@ -4,3 +4,5 @@ langchain-google-genai
 faiss-cpu
 sentence-transformers
 python-dotenv
+streamlit
+requests
